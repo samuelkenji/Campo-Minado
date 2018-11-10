@@ -92,8 +92,42 @@ def quadrado(grade, screen):
 
     return coord
 
+def buscaPosE(quadrado, grade, screen): #Pega a posição do 'clique' do botão esquerdo
+    pos = pygame.mouse.get_pos()
+    coord = quadrado(grade, screen)
+
+    myfont = pygame.font.SysFont('Comic Sans MS', 14)
+
+    for i in range(len(coord)):
+        for j in range(len(coord[0])):
+            if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3]:
+                if grade[i][j] == 0:
+                    pygame.draw.rect(screen, (22, 79, 170), (coord[i][j][0],coord[i][j][1],40,40))
+                elif grade[i][j] == -1:
+                    pygame.draw.rect(screen, (239, 9, 17), (coord[i][j][0], coord[i][j][1], 40, 40))
+                else:
+                    pygame.draw.rect(screen, (22, 79, 170), (coord[i][j][0], coord[i][j][1], 40, 40))
+                    texto = str(grade[i][j])
+                    textsurface = myfont.render(texto, False, (255, 255, 255))
+                    screen.blit(textsurface, (coord[i][j][0]+17, coord[i][j][1]+15))
+                break
+
+def buscaPosD(quadrado, grade, screen):#Pega a posição do 'clique' do botão direito
+    pos = pygame.mouse.get_pos()
+    coord = quadrado(grade, screen)
+
+    myfont = pygame.font.SysFont('Comic Sans MS', 12)
+
+    for i in range(len(coord)):
+        for j in range(len(coord[0])):
+            if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3]:
+                textsurface = myfont.render('M', False, (0, 0, 0))
+                screen.blit(textsurface, (coord[i][j][0]+17, coord[i][j][1]+15))
+                break
+
 def game():
     pygame.init()
+    pygame.font.init()
 
     grade = campo()
     bomba(grade)
@@ -113,13 +147,9 @@ def game():
                 rodando = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0] == True:
-                    pos = pygame.mouse.get_pos()
-                    print(pos)
-                    if coord[8][8][0]<=pos[0]<=coord[8][8][2] and coord[8][8][1]<=pos[1]<=coord[8][8][3]:
-                        print('ultimo quadrado')
+                    buscaPosE(quadrado, grade, screen)
                 else:
-                    pos = pygame.mouse.get_pos()
-                    print(pos)
+                    buscaPosD(quadrado, grade, screen)
         pygame.display.update()
     pygame.quit()
     
