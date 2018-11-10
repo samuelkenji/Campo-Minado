@@ -15,9 +15,6 @@ def campo():
 
     return grade
 
-def campoPygame():
-    gradePygame = []
-
 #Aloca bombas aleatoriamente no campo
 def bomba(grade):
     bomba = -1
@@ -63,15 +60,37 @@ def prox(grade, l, c): #Aumenta em 1 o valor dos elementos vizinhos
 
 def quadrado(grade, screen):
     cor = (123, 124, 127)
+    coord = [None]*len(grade)
+    for c in range(len(grade)):
+        coord[c] = [None]*len(grade)
+        x = -1
+        y = -1
+
     if len(grade) == 9:
         for i in range(0, 360, 40):
+            x+=1
             for j in range(0, 360, 40):
+                y += 1
+                if y == 9:
+                    y = 0
+
                 pygame.draw.rect(screen, cor, (i,j,40,40),2)
+                coordElementos = [i, j, i+40, j+40]
+                coord[x][y] = coordElementos
+
+                
     else:
         for i in range(0, 640, 40):
+            x+=1
             for j in range(0, 640, 40):
+                y+=1
+                if y == 16:
+                    y = 0
                 pygame.draw.rect(screen, cor, (i,j,40,40),2)
+                coordElementos = [i, j, i+40, j+40]
+                coord[x][y] = coordElementos
 
+    return coord
 
 def game():
     pygame.init()
@@ -84,7 +103,7 @@ def game():
     else:
         screen = pygame.display.set_mode((641, 641))
     screen.fill((200, 202, 206))
-    quadrado(grade,screen)
+    coord = quadrado(grade,screen)
 
     rodando = True
 
@@ -96,6 +115,8 @@ def game():
                 if pygame.mouse.get_pressed()[0] == True:
                     pos = pygame.mouse.get_pos()
                     print(pos)
+                    if coord[8][8][0]<=pos[0]<=coord[8][8][2] and coord[8][8][1]<=pos[1]<=coord[8][8][3]:
+                        print('ultimo quadrado')
                 else:
                     pos = pygame.mouse.get_pos()
                     print(pos)
