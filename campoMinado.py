@@ -21,16 +21,22 @@ def bomba(grade):
     b_quant = 0
     if len(grade) == 9:
         b_quant = 10 #Número de bombas
-        for x in range(b_quant):
+        cont = 0
+        while cont < b_quant:
             eixo_x = random.randint(0,8)
             eixo_y = random.randint(0,8)
-            grade[eixo_x][eixo_y] = bomba
+            if grade[eixo_x][eixo_y] != -1:
+                grade[eixo_x][eixo_y] = bomba
+                cont+=1
     elif len(grade) == 16:
         b_quant = 40
-        for x in range(b_quant):
+        cont = 0
+        while cont < b_quant:
             eixo_x = random.randint(0,15)
             eixo_y = random.randint(0,15)
-            grade[eixo_x][eixo_y] = bomba
+            if grade[eixo_x][eixo_y] != -1:
+                grade[eixo_x][eixo_y] = bomba
+                cont+=1
 
     achaBomba(grade)
 
@@ -92,17 +98,17 @@ def quadrado(grade, screen):
 
     return coord
 
-def buscaPosE(quadrado, grade, screen): #Pega a posição do 'clique' do botão esquerdo
+def buscaPosE(quadrado, grade, screen, status): #Pega a posição do 'clique' do botão esquerdo
     pos = pygame.mouse.get_pos()
     coord = quadrado(grade, screen)
 
-    myfont = pygame.font.SysFont('Comic Sans MS', 14)
+    
 
     for i in range(len(coord)):
         for j in range(len(coord[0])):
-            if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3]:
-                if grade[i][j] == 0:
-                    pygame.draw.rect(screen, (22, 79, 170), (coord[i][j][0],coord[i][j][1],40,40))
+            if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3] and status[i][j] == 0:
+                if grade[i][j] >= 0:
+                    revelaVazio(grade, status, coord, screen, i, j)
                 elif grade[i][j] == -1:
                     for i in range(len(coord)):
                         for j in range(len(coord[0])):
@@ -110,14 +116,25 @@ def buscaPosE(quadrado, grade, screen): #Pega a posição do 'clique' do botão 
                                 pygame.draw.rect(screen, (239, 9, 17), (coord[i][j][0], coord[i][j][1], 40, 40))
                                 pygame.display.update()
                     sys.exit()
-                else:
-                    pygame.draw.rect(screen, (22, 79, 170), (coord[i][j][0], coord[i][j][1], 40, 40))
-                    texto = str(grade[i][j])
-                    textsurface = myfont.render(texto, False, (255, 255, 255))
-                    screen.blit(textsurface, (coord[i][j][0]+17, coord[i][j][1]+15))
+                status[i][j] = 1
+                
                 break
 
-def buscaPosD(quadrado, grade, screen):#Pega a posição do 'clique' do botão direito
+def revelaVazio(grade, status, coord, screen, i, j):
+    myfont = pygame.font.SysFont('Comic Sans MS', 14)
+    for x in range(-1,2):
+        for y in range(-1,2):
+            if limite(grade, x+i, j+y) and grade[x+i][y+j] == 0:
+                pygame.draw.rect(screen, (22, 79, 170), (coord[x+i][y+j][0],coord[x+i][y+j][1],40,40))
+            if limite(grade, x+i, j+y) and grade[x+i][y+j] > 0:
+                pygame.draw.rect(screen, (22, 79, 170), (coord[x+i][y+j][0], coord[x+i][y+j][1], 40, 40))
+                texto = str(grade[i][j])
+                textsurface = myfont.render(texto, False, (255, 255, 255))
+                screen.blit(textsurface, (coord[i][j][0]+17, coord[i][j][1]+15))
+                #return revelaVazio(grade, status, coord, screen, i, j)
+                    
+
+def buscaPosD(quadrado, grade, screen, status):#Pega a posição do 'clique' do botão direito
     pos = pygame.mouse.get_pos()
     coord = quadrado(grade, screen)
 
@@ -125,10 +142,14 @@ def buscaPosD(quadrado, grade, screen):#Pega a posição do 'clique' do botão d
 
     for i in range(len(coord)):
         for j in range(len(coord[0])):
-            if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3]:
+            if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3] and status[i][j] == 0:                
                 textsurface = myfont.render('M', False, (0, 0, 0))
                 screen.blit(textsurface, (coord[i][j][0]+17, coord[i][j][1]+15))
+                status[i][j] = 2
                 break
+
+#def status(grade, status):
+    
 
     
 def game():
@@ -137,6 +158,10 @@ def game():
 
     grade = campo()
     bomba(grade)
+
+    status = [0]*len(grade)
+    for x in range(len(grade)):
+        status[x] = [0]*len(grade)
 
     if len(grade) == 9:
         screen = pygame.display.set_mode((361, 361))
@@ -153,9 +178,9 @@ def game():
                 rodando = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0] == True:
-                    buscaPosE(quadrado, grade, screen)
+                    buscaPosE(quadrado, grade, screen, status)
                 else:
-                    buscaPosD(quadrado, grade, screen)
+                    buscaPosD(quadrado, grade, screen, status)
         pygame.display.update()
     pygame.quit()
     
