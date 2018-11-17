@@ -1,6 +1,5 @@
 import pygame
 import random
-import sys
 
 #Cria o campo
 def campo():
@@ -109,8 +108,10 @@ def buscaPosE(quadrado, grade, screen, statusMatriz): #Pega a posição do 'cliq
             if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3] and statusMatriz[i][j] == 0:
                 if grade[i][j] == 0:
                     revelaVazio(grade, statusMatriz,i,j)
+                    statusMatriz[i][j] = 1
                     status(grade, statusMatriz, screen, coord, i, j)
                 elif grade[i][j] > 0:
+                    statusMatriz[i][j] = 1
                     status(grade, statusMatriz, screen, coord, i, j)
                 elif grade[i][j] == -1:
                     for i in range(len(coord)):
@@ -118,25 +119,42 @@ def buscaPosE(quadrado, grade, screen, statusMatriz): #Pega a posição do 'cliq
                             if grade[i][j]==-1:
                                 pygame.draw.rect(screen, (239, 9, 17), (coord[i][j][0]+2, coord[i][j][1]+2, 38, 38))
                                 pygame.display.update()
-                    sys.exit()
+                            statusMatriz[i][j] = -1
+                    status(grade, statusMatriz, screen, coord, i, j)
 
                 break
 
 def status(grade, statusMatriz, screen, coord, i, j):
-    statusMatriz[i][j] = 1
+    
+    contador = 0
+    bombas = 0
 
     myfont = pygame.font.SysFont('Comic Sans MS', 14)
 
     for x in range(len(statusMatriz)):
         for y in range(len(statusMatriz)):
+            if grade[x][y] == -1:
+                bombas+=1
             if statusMatriz[x][y] == 1 and grade[x][y] == 0:
+                contador+=1
                 pygame.draw.rect(screen, (22, 79, 170), (coord[x][y][0]+2, coord[x][y][1]+2, 38, 38))
             elif statusMatriz[x][y] == 1 and grade[x][y] > 0:
+                contador+=1
                 pygame.draw.rect(screen, (22, 79, 170), (coord[x][y][0]+2, coord[x][y][1]+2, 38, 38))
                 texto = str(grade[x][y])
                 textsurface = myfont.render(texto, False, (255, 255, 255))
                 screen.blit(textsurface, (coord[x][y][0] + 17, coord[x][y][1] + 15))
 
+    if contador == len(grade)**2 - bombas:
+        print('Você ganhou!')
+        for i in range(len(grade)):
+            for j in range(len(grade)):
+                statusMatriz[i][j] = 3
+    elif statusMatriz[0][0] == -1:
+        print('Você perdeu!')
+
+
+    
 def revelaVazio(grade, statusMatriz, i, j):
     for x in range(-1, 2):
         for y in range(-1, 2):
@@ -158,7 +176,7 @@ def buscaPosD(quadrado, grade, screen, statusMatriz):#Pega a posição do 'cliqu
 
     for i in range(len(coord)):
         for j in range(len(coord[0])):
-            if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3] and statusMatriz[i][j] != 1:
+            if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3] and (statusMatriz[i][j] == 0 or statusMatriz[i][j] == 2):
                 if statusMatriz[i][j] == 0:
                     textsurface = myfont.render('M', False, (0, 0, 0))
                     screen.blit(textsurface, (coord[i][j][0]+15, coord[i][j][1]+13))
@@ -172,7 +190,6 @@ def buscaPosD(quadrado, grade, screen, statusMatriz):#Pega a posição do 'cliqu
 
 
 def game():
-    
     pygame.init()
     pygame.font.init()
     
