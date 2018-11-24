@@ -146,40 +146,41 @@ def status(grade, statusMatriz, screen, coord, i, j):
                 screen.blit(textsurface, (coord[x][y][0] + 17, coord[x][y][1] + 15))
 
     if contador == len(grade)**2 - bombas:
-        print('Você ganhou!')
+        titulo = 'Você ganhou!'
+        print(titulo)
+        pygame.display.set_caption(titulo)
         for i in range(len(grade)):
             for j in range(len(grade)):
                 statusMatriz[i][j] = 3
     elif statusMatriz[0][0] == -1:
-        print('Você perdeu!')
+        titulo = 'Você perdeu!'
+        print(titulo)
+        pygame.display.set_caption(titulo)
+        
 
 
     
 def revelaVazio(grade, statusMatriz, i, j):
-    for x in range(-1, 2):
-        for y in range(-1, 2):
-            if limite(grade, x+i, y+j) and grade[x+i][y+j] > 0 and statusMatriz[x+i][y+j] == 0:
+    for x in range(-1, 2, 1):
+        for y in range(-1, 2, 1):
+            if limite(grade, x+i, y+j) and statusMatriz[x+i][y+j] == 0:
                 statusMatriz[x+i][y+j] = 1
-                #return -1
-
-            if limite(grade, x+i, y+j) and grade[x+i][y+j] == 0 and statusMatriz[x+i][y+j] == 0:
-                statusMatriz[x+i][y+j] = 1
-                return revelaVazio(grade, statusMatriz, x+i, y+j)
+                if grade[x+i][y+j] == 0:
+                    revelaVazio(grade, statusMatriz, x+i, y+j)
                 
 
 
-def buscaPosD(quadrado, grade, screen, statusMatriz):#Pega a posição do 'clique' do botão direito
+def buscaPosD(quadrado, grade, screen, statusMatriz, bandeira):#Pega a posição do 'clique' do botão direito
     pos = pygame.mouse.get_pos()
     coord = quadrado(grade, screen)
-
-    myfont = pygame.font.SysFont('Comic Sans MS', 12)
+    
 
     for i in range(len(coord)):
         for j in range(len(coord[0])):
             if coord[i][j][0]<=pos[0]<=coord[i][j][2] and coord[i][j][1]<=pos[1]<=coord[i][j][3] and (statusMatriz[i][j] == 0 or statusMatriz[i][j] == 2):
                 if statusMatriz[i][j] == 0:
-                    textsurface = myfont.render('M', False, (0, 0, 0))
-                    screen.blit(textsurface, (coord[i][j][0]+15, coord[i][j][1]+13))
+                    pygame.draw.rect(screen, (22, 79, 170), (coord[i][j][0]+2, coord[i][j][1]+2, 38, 38))
+                    screen.blit(bandeira, (coord[i][j][0]+11, coord[i][j][1]+11))
                     statusMatriz[i][j] = 2
                     
                 elif statusMatriz[i][j] == 2:
@@ -208,6 +209,9 @@ def game():
     screen.fill((200, 202, 206))
     coord = quadrado(grade,screen)
 
+    bandeira = pygame.image.load("bandeira.png").convert_alpha()
+    bandeira = pygame.transform.scale(bandeira, (20, 20))
+
     rodando = True
 
     while rodando:
@@ -218,7 +222,7 @@ def game():
                 if pygame.mouse.get_pressed()[0] == True:
                     buscaPosE(quadrado, grade, screen, statusMatriz)
                 elif pygame.mouse.get_pressed()[2] == True:
-                    buscaPosD(quadrado, grade, screen, statusMatriz)
+                    buscaPosD(quadrado, grade, screen, statusMatriz, bandeira)
         pygame.display.update()
     pygame.quit()
     
