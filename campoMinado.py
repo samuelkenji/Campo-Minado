@@ -1,7 +1,7 @@
 import pygame
 import random
 
-#Cria o campo
+#Cria o campo dependendo da escolha do jogador
 def campo():
     tamanho_escolha = int(input('Escolha um tamanho (9x9 ou 16x16):'))
 
@@ -14,7 +14,7 @@ def campo():
 
     return grade
 
-#Aloca bombas aleatoriamente no campo
+#Aloca bombas aleatoriamente no campo escolhido pelo johador
 def bomba(grade):
     bomba = -1
     b_quant = 0
@@ -39,10 +39,6 @@ def bomba(grade):
 
     achaBomba(grade)
 
-    for x in range(len(grade)):
-        for y in range(len(grade)):
-            print(grade[x][y], end="\t")
-        print("\n")
 
 def achaBomba(grade): #Itera sobre a matriz até achar uma bomba
     for x in range(len(grade)):
@@ -63,7 +59,7 @@ def prox(grade, l, c): #Aumenta em 1 o valor dos elementos vizinhos
             if limite(grade, l+lin, col+c) and grade[l+lin][c+col] != -1:
                 grade[l+lin][col+c] += 1
 
-def quadrado(grade, screen):
+def quadrado(grade, screen):#Colore os quadrados com a cor inicial do jogo.
     cor = (123, 124, 127)
     coord = [None]*len(grade)
     for c in range(len(grade)):
@@ -124,7 +120,7 @@ def buscaPosE(quadrado, grade, screen, statusMatriz): #Pega a posição do 'cliq
 
                 break
 
-def status(grade, statusMatriz, screen, coord, i, j):
+def status(grade, statusMatriz, screen, coord, i, j):#Define quais quadrados podem ser marcados, revelados e quais são escondidos, além de verificar quando uma bomba foi ativada ou quando há um ganhador.
     
     contador = 0
     bombas = 0
@@ -160,7 +156,7 @@ def status(grade, statusMatriz, screen, coord, i, j):
 
 
     
-def revelaVazio(grade, statusMatriz, i, j):
+def revelaVazio(grade, statusMatriz, i, j):#Revela as casas próximas ao 'clique' do jogador que estão sem bombas.
     for x in range(-1, 2, 1):
         for y in range(-1, 2, 1):
             if limite(grade, x+i, y+j) and statusMatriz[x+i][y+j] == 0:
@@ -190,10 +186,11 @@ def buscaPosD(quadrado, grade, screen, statusMatriz, bandeira):#Pega a posição
                 break
 
 
-def game():
+def game(): #Executa todas as outras funções do jogo.
     pygame.init()
     pygame.font.init()
     
+    print("\n 'REGRAS DO JOGO' \n O 'Campo Minado' é composto por dois campos à escolha do jogador(9x9 ou 16x16). \n O botão direito serve para revelar o que há no quadrado e o botão direito serve para marcar ou desmarcar uma bomba.\n Ao abrir um quadradinho, aparecerá um número que indica quantas bombas há próximas a esse quadrado.\n Vence o jogo quem não abrir nenhuma bomba! \n BOA SORTE!")
 
     grade = campo()
     bomba(grade)
