@@ -1,3 +1,6 @@
+#CASSIA APARECIDA BARBOSA   31808204
+#SAMUEL KENJI               31817106
+
 import pygame
 import random
 
